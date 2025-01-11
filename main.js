@@ -36,7 +36,7 @@ var layer_list =[
 		'src': './images/layer_2_1.png',
 		'z_index': -4,
 		'position': {x: 0, y: 0},
-		'blend': null,
+		'blend': 0,
 		'opacity': 1
 	},
 	{
@@ -52,7 +52,7 @@ var layer_list =[
 		'src': './images/layer_4_1.png',
 		'z_index': -2,
 		'position': {x: 0, y: 0},
-		'blend': null,
+		'blend': 0,
 		'opacity': 1
 	},
 	{
@@ -60,7 +60,7 @@ var layer_list =[
 		'src': './images/layer_5_1.png',
 		'z_index': -0.5,
 		'position': {x: 0, y: 0},
-		'blend': null,
+		'blend': 0,
 		'opacity': 1
 	},
 	{
@@ -68,7 +68,7 @@ var layer_list =[
 		'src': './images/layer_6_1.png',
 		'z_index': -0.5,
 		'position': {x: 0, y: 0},
-		'blend': null,
+		'blend': 0,
 		'opacity': 1
 	},
 	{
@@ -76,7 +76,7 @@ var layer_list =[
 		'src': './images/layer_7_1.png',
 		'z_index': 0,
 		'position': {x: 0, y: 0},
-		'blend': null,
+		'blend': 0,
 		'opacity': 1
 	},
 	{
@@ -84,7 +84,7 @@ var layer_list =[
 		'src': './images/layer_8_1.png',
 		'z_index': 0.5,
 		'position': {x: 0, y: 0},
-		'blend': null,
+		'blend': 0,
 		'opacity': 1
 	}
 ];
