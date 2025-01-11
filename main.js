@@ -141,14 +141,16 @@ function requestMotionAccess() {
     DeviceMotionEvent.requestPermission()
       .then((permissionState) => {
         if (permissionState === 'granted') {
+          console.log('Motion access granted');
           window.addEventListener('deviceorientation', handleDeviceOrientation);
         } else {
           console.warn('Motion access denied.');
         }
       })
-      .catch(console.error);
+      .catch((err) => console.error('Permission error:', err));
   } else {
     // Motion permission not needed
+    console.log('Motion permission not required on this device');
     window.addEventListener('deviceorientation', handleDeviceOrientation);
   }
 }
@@ -156,6 +158,8 @@ function requestMotionAccess() {
 requestMotionAccess();
 
 function handleDeviceOrientation(event) {
+  console.log(`Orientation Data: Beta ${event.beta}, Gamma ${event.gamma}`);
+
   if (motionInitial.x === null && motionInitial.y === null) {
     motionInitial.x = event.beta;
     motionInitial.y = event.gamma;
@@ -184,9 +188,12 @@ function handleDeviceOrientation(event) {
       motion.x = 0;
       motion.y = 0;
   }
+
+  console.log(`Motion X: ${motion.x}, Motion Y: ${motion.y}`);
 }
 
 window.addEventListener('orientationchange', () => {
+  console.log('Orientation changed, resetting motion initial values.');
   motionInitial.x = null;
   motionInitial.y = null;
 });
