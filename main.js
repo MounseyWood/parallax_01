@@ -1,265 +1,186 @@
 // Get reference to Canvas
-var canvas = document.getElementById('canvas');
-
-// Get reference to Canvas Context
-var context = canvas.getContext('2d');
+const canvas = document.getElementById('canvas');
+const context = canvas.getContext('2d');
 
 // Get reference to loading screen
-var loading_screen = document.getElementById('loading');
+const loadingScreen = document.getElementById('loading');
 
 // Initialize loading variables
-var loaded = false;
-var load_counter = 0;
+let loaded = false;
+let loadCounter = 0;
 
 // Initialize images for layers
-var background = new Image();
-var didot = new Image();
-var shadow = new Image();
-var man = new Image();
-var headlines = new Image();
-var title = new Image();
-var frame = new Image();
-var gloss = new Image();
+const background = new Image();
+const didot = new Image();
+const shadow = new Image();
+const man = new Image();
+const headlines = new Image();
+const title = new Image();
+const frame = new Image();
+const gloss = new Image();
 
 // Create a list of layer objects
-var layer_list = [
-    {
-        'image': background,
-        'src': './images/layer_1_1.png',
-        'z_index': -5,
-        'position': { x: 0, y: 0 },
-        'blend': 0,
-        'opacity': 1
-    },
-    {
-        'image': didot,
-        'src': './images/layer_2_1.png',
-        'z_index': -4,
-        'position': { x: 0, y: 0 },
-        'blend': 0,
-        'opacity': 1
-    },
-    {
-        'image': shadow,
-        'src': './images/layer_3_1.png',
-        'z_index': -3,
-        'position': { x: 0, y: 0 },
-        'blend': 'multiply',
-        'opacity': 0.5
-    },
-    {
-        'image': man,
-        'src': './images/layer_4_1.png',
-        'z_index': -2,
-        'position': { x: 0, y: 0 },
-        'blend': 0,
-        'opacity': 1
-    },
-    {
-        'image': headlines,
-        'src': './images/layer_5_1.png',
-        'z_index': -0.5,
-        'position': { x: 0, y: 0 },
-        'blend': 0,
-        'opacity': 1
-    },
-    {
-        'image': title,
-        'src': './images/layer_6_1.png',
-        'z_index': -0.5,
-        'position': { x: 0, y: 0 },
-        'blend': 0,
-        'opacity': 1
-    },
-    {
-        'image': frame,
-        'src': './images/layer_7_1.png',
-        'z_index': 0,
-        'position': { x: 0, y: 0 },
-        'blend': 0,
-        'opacity': 1
-    },
-    {
-        'image': gloss,
-        'src': './images/layer_8_1.png',
-        'z_index': 0.5,
-        'position': { x: 0, y: 0 },
-        'blend': 0,
-        'opacity': 1
-    }
+const layerList = [
+  { image: background, src: './images/layer_1_1.png', zIndex: -5, position: { x: 0, y: 0 }, blend: 0, opacity: 1 },
+  { image: didot, src: './images/layer_2_1.png', zIndex: -4, position: { x: 0, y: 0 }, blend: 0, opacity: 1 },
+  { image: shadow, src: './images/layer_3_1.png', zIndex: -3, position: { x: 0, y: 0 }, blend: 'multiply', opacity: 0.5 },
+  { image: man, src: './images/layer_4_1.png', zIndex: -2, position: { x: 0, y: 0 }, blend: 0, opacity: 1 },
+  { image: headlines, src: './images/layer_5_1.png', zIndex: -0.5, position: { x: 0, y: 0 }, blend: 0, opacity: 1 },
+  { image: title, src: './images/layer_6_1.png', zIndex: -0.5, position: { x: 0, y: 0 }, blend: 0, opacity: 1 },
+  { image: frame, src: './images/layer_7_1.png', zIndex: 0, position: { x: 0, y: 0 }, blend: 0, opacity: 1 },
+  { image: gloss, src: './images/layer_8_1.png', zIndex: 0.5, position: { x: 0, y: 0 }, blend: 0, opacity: 1 }
 ];
 
-// Load all images and handle errors
-layer_list.forEach(function (layer, index) {
-    layer.image.onload = function () {
-        load_counter += 1;
-        if (load_counter >= layer_list.length) {
-            // Hide the loading screen
-            hideLoading();
-            requestAnimationFrame(drawCanvas);
-        }
-    };
-
-    layer.image.onerror = function () {
-        console.error('Failed to load image:', layer.src);
-    };
-
-    layer.image.src = layer.src;
+layerList.forEach((layer) => {
+  layer.image.onload = function () {
+    loadCounter++;
+    if (loadCounter >= layerList.length) {
+      hideLoading();
+      requestAnimationFrame(drawCanvas);
+    }
+  };
+  layer.image.src = layer.src;
 });
 
 function hideLoading() {
-    loading_screen.classList.add('hidden');
+  loadingScreen.classList.add('hidden');
 }
 
 function drawCanvas() {
-    // Clear whatever is in the canvas
-    context.clearRect(0, 0, canvas.width, canvas.height);
+  context.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Calculate how much the canvas should rotate
-    var rotate_x = (pointer.y * -0.15) + (motion.y * -1.2);
-    var rotate_y = (pointer.x * 0.15) + (motion.x * 1.2);
+  // Calculate how much the canvas should rotate
+  const rotateX = pointer.y * -0.15 + motion.y * -1.2;
+  const rotateY = pointer.x * 0.15 + motion.x * 1.2;
 
-    var transform_string = "rotateX(" + rotate_x + "deg) rotateY(" + rotate_y + "deg)";
+  const transformString = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  canvas.style.transform = transformString;
 
-    // Apply rotation to the canvas
-    canvas.style.transform = transform_string;
+  // Loop through each layer and draw it to the canvas
+  layerList.forEach((layer) => {
+    layer.position = getOffset(layer);
 
-    // Loop through each layer and draw it to the canvas
-    layer_list.forEach(function (layer, index) {
-        layer.position = getOffset(layer);
+    context.globalCompositeOperation = layer.blend || 'normal';
+    context.globalAlpha = layer.opacity;
 
-        if (layer.blend) {
-            context.globalCompositeOperation = layer.blend;
-        } else {
-            context.globalCompositeOperation = 'normal';
-        }
-
-        context.globalAlpha = layer.opacity;
-        context.drawImage(layer.image, layer.position.x, layer.position.y);
-    });
-
-    requestAnimationFrame(drawCanvas);
+    context.drawImage(layer.image, layer.position.x, layer.position.y);
+  });
+  requestAnimationFrame(drawCanvas);
 }
 
 function getOffset(layer) {
-    var touch_multiplier = 0.1;
-    var touch_offset_x = pointer.x * layer.z_index * touch_multiplier;
-    var touch_offset_y = pointer.y * layer.z_index * touch_multiplier;
+  const touchMultiplier = 0.1;
+  const touchOffsetX = pointer.x * layer.zIndex * touchMultiplier;
+  const touchOffsetY = pointer.y * layer.zIndex * touchMultiplier;
 
-    var motion_multiplier = 1;
-    var motion_offset_x = motion.x * layer.z_index * motion_multiplier;
-    var motion_offset_y = motion.y * layer.z_index * motion_multiplier;
+  const motionMultiplier = 1;
+  const motionOffsetX = motion.x * layer.zIndex * motionMultiplier;
+  const motionOffsetY = motion.y * layer.zIndex * motionMultiplier;
 
-    var offset = {
-        x: touch_offset_x + motion_offset_x,
-        y: touch_offset_y + motion_offset_y
-    };
-
-    return offset;
+  return {
+    x: touchOffsetX + motionOffsetX,
+    y: touchOffsetY + motionOffsetY
+  };
 }
 
 //// TOUCH AND MOUSE CONTROLS ////
-
-var moving = false;
-
-// Initialize touch and mouse position
-var pointer_initial = {
-    x: 0,
-    y: 0
-};
-
-var pointer = {
-    x: 0,
-    y: 0
-};
+let moving = false;
+const pointerInitial = { x: 0, y: 0 };
+const pointer = { x: 0, y: 0 };
 
 canvas.addEventListener('touchstart', pointerStart);
 canvas.addEventListener('mousedown', pointerStart);
 
 function pointerStart(event) {
-    moving = true;
-    if (event.type === 'touchstart') {
-        pointer_initial.x = event.touches[0].clientX;
-        pointer_initial.y = event.touches[0].clientY;
-    } else if (event.type === 'mousedown') {
-        pointer_initial.x = event.clientX;
-        pointer_initial.y = event.clientY;
-    }
+  moving = true;
+  if (event.type === 'touchstart') {
+    pointerInitial.x = event.touches[0].clientX;
+    pointerInitial.y = event.touches[0].clientY;
+  } else if (event.type === 'mousedown') {
+    pointerInitial.x = event.clientX;
+    pointerInitial.y = event.clientY;
+  }
 }
 
 window.addEventListener('touchmove', pointerMove);
 window.addEventListener('mousemove', pointerMove);
 
 function pointerMove(event) {
-    if (moving) {
-        var current_x = 0;
-        var current_y = 0;
-        if (event.type === 'touchmove') {
-            current_x = event.touches[0].clientX;
-            current_y = event.touches[0].clientY;
-        } else if (event.type === 'mousemove') {
-            current_x = event.clientX;
-            current_y = event.clientY;
-        }
-        pointer.x = current_x - pointer_initial.x;
-        pointer.y = current_y - pointer_initial.y;
+  event.preventDefault();
+  if (moving) {
+    let currentX = 0;
+    let currentY = 0;
+    if (event.type === 'touchmove') {
+      currentX = event.touches[0].clientX;
+      currentY = event.touches[0].clientY;
+    } else if (event.type === 'mousemove') {
+      currentX = event.clientX;
+      currentY = event.clientY;
     }
+    pointer.x = currentX - pointerInitial.x;
+    pointer.y = currentY - pointerInitial.y;
+  }
 }
 
 window.addEventListener('touchend', endGesture);
 window.addEventListener('mouseup', endGesture);
 
 function endGesture() {
-    moving = false;
-    pointer.x = 0;
-    pointer.y = 0;
+  moving = false;
+  pointer.x = 0;
+  pointer.y = 0;
 }
 
 //// MOTION CONTROLS ////
+const motionInitial = { x: null, y: null };
+const motion = { x: 0, y: 0 };
 
-// Initialize variables for motion-based parallax
-var motion_initial = {
-    x: null,
-    y: null
-};
-
-var motion = {
-    x: 0,
-    y: 0
-};
-
-// Listen to gyroscope events
-if ('DeviceOrientationEvent' in window) {
-    window.addEventListener('deviceorientation', function (event) {
-        if (motion_initial.x === null && motion_initial.y === null) {
-            motion_initial.x = event.beta;
-            motion_initial.y = event.gamma;
-        }
-
-        if (window.orientation === 0) {
-            // Portrait orientation
-            motion.x = event.gamma - motion_initial.y;
-            motion.y = event.beta - motion_initial.x;
-        } else if (window.orientation === 90) {
-            // Landscape left
-            motion.x = event.beta - motion_initial.x;
-            motion.y = -event.gamma + motion_initial.y;
-        } else if (window.orientation === -90) {
-            // Landscape right
-            motion.x = -event.beta + motion_initial.x;
-            motion.y = event.gamma - motion_initial.y;
+// Request motion access for iOS
+function requestMotionAccess() {
+  if (typeof DeviceMotionEvent.requestPermission === 'function') {
+    DeviceMotionEvent.requestPermission()
+      .then((permissionState) => {
+        if (permissionState === 'granted') {
+          window.addEventListener('deviceorientation', handleDeviceOrientation);
         } else {
-            // Upside-down
-            motion.x = -event.gamma + motion_initial.y;
-            motion.y = -event.beta + motion_initial.x;
+          console.warn('Motion access denied.');
         }
-    });
-} else {
-    console.warn('Device orientation not supported.');
+      })
+      .catch(console.error);
+  } else {
+    // Motion permission not needed
+    window.addEventListener('deviceorientation', handleDeviceOrientation);
+  }
 }
 
-// Reset motion data on orientation change
-window.addEventListener('orientationchange', function () {
-    motion_initial.x = null;
-    motion_initial.y = null;
+requestMotionAccess();
+
+function handleDeviceOrientation(event) {
+  if (motionInitial.x === null && motionInitial.y === null) {
+    motionInitial.x = event.beta;
+    motionInitial.y = event.gamma;
+  }
+
+  if (window.orientation === 0) {
+    // Portrait
+    motion.x = event.gamma - motionInitial.y;
+    motion.y = event.beta - motionInitial.x;
+  } else if (window.orientation === 90) {
+    // Landscape (left)
+    motion.x = event.beta - motionInitial.x;
+    motion.y = -event.gamma + motionInitial.y;
+  } else if (window.orientation === -90) {
+    // Landscape (right)
+    motion.x = -event.beta + motionInitial.x;
+    motion.y = event.gamma - motionInitial.y;
+  } else {
+    // Upside down
+    motion.x = -event.gamma + motionInitial.y;
+    motion.y = -event.beta + motionInitial.x;
+  }
+}
+
+window.addEventListener('orientationchange', () => {
+  motionInitial.x = null;
+  motionInitial.y = null;
 });
