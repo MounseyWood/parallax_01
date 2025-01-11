@@ -28,7 +28,7 @@ var layer_list =[
 		'src': './images/layer_1_1.png',
 		'z_index': -5,
 		'position': {x: 0, y: 0},
-		'blend': null,
+		'blend': 0,
 		'opacity': 1
 	},
 	{
