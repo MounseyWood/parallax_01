@@ -161,22 +161,28 @@ function handleDeviceOrientation(event) {
     motionInitial.y = event.gamma;
   }
 
-  if (window.orientation === 0) {
-    // Portrait
-    motion.x = event.gamma - motionInitial.y;
-    motion.y = event.beta - motionInitial.x;
-  } else if (window.orientation === 90) {
-    // Landscape (left)
-    motion.x = event.beta - motionInitial.x;
-    motion.y = -event.gamma + motionInitial.y;
-  } else if (window.orientation === -90) {
-    // Landscape (right)
-    motion.x = -event.beta + motionInitial.x;
-    motion.y = event.gamma - motionInitial.y;
-  } else {
-    // Upside down
-    motion.x = -event.gamma + motionInitial.y;
-    motion.y = -event.beta + motionInitial.x;
+  const orientation = window.orientation || 0;
+
+  switch (orientation) {
+    case 0: // Portrait
+      motion.x = event.gamma - motionInitial.y;
+      motion.y = event.beta - motionInitial.x;
+      break;
+    case 90: // Landscape (left)
+      motion.x = event.beta - motionInitial.x;
+      motion.y = -event.gamma + motionInitial.y;
+      break;
+    case -90: // Landscape (right)
+      motion.x = -event.beta + motionInitial.x;
+      motion.y = event.gamma - motionInitial.y;
+      break;
+    case 180: // Upside down
+      motion.x = -event.gamma + motionInitial.y;
+      motion.y = -event.beta + motionInitial.x;
+      break;
+    default:
+      motion.x = 0;
+      motion.y = 0;
   }
 }
 
